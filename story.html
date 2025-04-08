@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amy Learns to Share - Interactive Story</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f5f2;
+        }
+        
+        /* Header styles */
+        header {
+            background-color: #ff9dd8;
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        /* Navigation */
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #ffea80;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Main content */
+        main {
+            margin-top: 80px;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .intro h1 {
+            font-size: 2.5rem;
+            color: #ff6bb8;
+            margin-bottom: 1rem;
+        }
+        
+        .intro p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Story content */
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+        
+        .scene {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .scene:hover {
+            transform: translateY(-5px);
+        }
+        
+        .scene-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .scene-text {
+            flex: 1;
+        }
+        
+        .scene-number {
+            display: inline-block;
+            background-color: #ff9dd8;
+            color: white;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .scene h2 {
+            font-size: 1.8rem;
+            color: #ff6bb8;
+            margin-bottom: 1rem;
+        }
+        
+        .scene p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .educational-message {
+            font-style: italic;
+            color: #5a90ff;
+            font-weight: 500;
+            border-left: 4px solid #5a90ff;
+            padding-left: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .scene-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Navigation buttons */
+        .story-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: #ff9dd8;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-btn:hover {
+            background-color: #ff6bb8;
+            transform: scale(1.05);
+        }
+        
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Scene selector */
+        .scene-selector {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+        
+        .scene-dot {
+            width: 15px;
+            height: 15px;
+            background-color: #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .scene-dot.active {
+            background-color: #ff6bb8;
+            transform: scale(1.2);
+        }
+        
+        .scene-dot:hover {
+            background-color: #ffb8e0;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 3rem 1rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #ff9dd8;
+        }
+        
+        .footer-section p {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #ff9dd8;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: #444;
+            border-radius: 50%;
+            color: white;
+            text-align: center;
+            line-height: 40px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background-color: #ff9dd8;
+            transform: translateY(-3px);
+        }
+        
+        .bottom-footer {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #444;
+        }
+        
+        /* Hidden class for JavaScript */
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive styles */
+        @media (min-width: 768px) {
+            .scene-content {
+                flex-direction: row;
+            }
+            
+            .scene-text {
+                flex: 0 0 50%;
+                padding-right: 2rem;
+            }
+            
+            .scene-image-container {
+                flex: 0 0 50%;
+                display: flex;
+                align-items: center;
+            }
+            
+            .scene-image {
+                margin-top: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            nav {
+                width: 100%;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul li {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .nav-menu {
+                display: none;
+                width: 100%;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .scene {
+                padding: 1.5rem;
+            }
+            
+            .scene h2 {
+                font-size: 1.5rem;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header>
+        <div class="header-container">
+            <div class="logo">Amy's Story</div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#story">Story</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="home">
+        <section class="intro">
+            <h1>Amy Learns to Share</h1>
+            <p>Join Amy on her adventure as she discovers the joy of sharing and making new friends!</p>
+        </section>
+
+        <section id="story" class="story-container">
+            <!-- Only the active scene will be displayed, controlled by JavaScript -->
+        </section>
+
+        <!-- Scene navigation controls -->
+        <div class="scene-selector">
+            <!-- Scene dots will be generated by JavaScript -->
+        </div>
+
+        <div class="story-nav">
+            <button id="prev-btn" class="nav-btn">← Previous</button>
+            <button id="next-btn" class="nav-btn">Next →</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About Amy's Story</h3>
+                <p>Amy Learns to Share is an educational story that teaches children the importance of friendship, sharing, and cooperation.</p>
+                <p>Perfect for parents and educators looking to instill positive values in children.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#story">Read the Story</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <p>Follow us on social media for more stories and updates!</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook">f</a>
+                    <a href="#" aria-label="Twitter">t</a>
+                    <a href="#" aria-label="Instagram">i</a>
+                    <a href="#" aria-label="YouTube">y</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <p>Subscribe to receive new stories and updates.</p>
+                <form id="newsletter-form">
+                    <input type="email" placeholder="Your email" style="width: 100%; padding: 0.75rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                    <button type="submit" style="width: 100%; padding: 0.75rem; background-color: #ff9dd8; color: white; border: none; border-radius: 4px; cursor: pointer;">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="bottom-footer">
+            <p>© 2025 Amy's Story. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Story data
+        const storyData = [
+            {
+                number: 1,
+                title: "Amy Discovers a Toy Car",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. She finds a beautiful toy car in the garden and happily plays with it. Amy loves adventure and is always curious.",
+                message: "Learn to discover and appreciate what you have.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy finding a toy car in the garden"
+            },
+            {
+                number: 2,
+                title: "Amy Meets Bear",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Amy sees her friend, Bear, walking by. Bear is wearing a green vest and is looking for someone to play with. Amy decides to invite Bear to play with her toy car.",
+                message: "Invite others to share the fun.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy meeting Bear who is walking by"
+            },
+            {
+                number: 3,
+                title: "Bear Wants to Play",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Bear hesitates and says, \"I want to play too, but I don't have a toy.\" Amy feels a little unsure, but she knows what to do.",
+                message: "Understand your friend's needs and learn to share.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Bear hesitating and Amy thinking about what to do"
+            },
+            {
+                number: 4,
+                title: "Amy Decides to Share",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Amy smiles and says, \"That's okay, we can play together. We can take turns.\" Her friendly nature shows through her smile and the way she is dressed.",
+                message: "Sharing doesn't take away your joy; it brings happiness to everyone.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy smiling and offering to share with Bear"
+            },
+            {
+                number: 5,
+                title: "Amy Teaches Bear",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Amy and Bear start playing together. Amy patiently shows Bear how to push the toy car and encourages him to try it on his own.",
+                message: "Learn to teach and encourage your friends.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy teaching Bear how to play with the toy car"
+            },
+            {
+                number: 6,
+                title: "Bear Makes a Mistake",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Bear pushes the toy car, but it tips over clumsily. Amy laughs and says, \"It's okay, let's try again!\"",
+                message: "Encourage your friends to try again, and stay positive even when things are hard.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Bear tipping over the car and Amy encouraging him"
+            },
+            {
+                number: 7,
+                title: "Playing Together",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. The two friends continue playing with the toy car. Amy is always patient and waits for Bear, happy every time it's his turn.",
+                message: "Playing together brings you closer as friends.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy and Bear taking turns with the toy car"
+            },
+            {
+                number: 8,
+                title: "The Car Rolls Away",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Suddenly, the car rolls far away. Amy and Bear both run to chase it. Amy stays calm and helps guide Bear to run together.",
+                message: "Stay calm and work together when facing challenges.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy and Bear chasing after the rolling car"
+            },
+            {
+                number: 9,
+                title: "Amy Helps Bear",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. Amy notices that Bear falls down, and she immediately runs over to help him up, saying, \"Don't worry, I'm here.\"",
+                message: "Offer a helping hand when your friend needs it.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy helping Bear after he falls down"
+            },
+            {
+                number: 10,
+                title: "Best Friends Forever",
+                text: "Amy is an energetic little girl, wearing a pink dress and a blue hat. In the end, Amy and Bear successfully retrieve the toy car and continue playing happily. Amy's generosity and patience make her and Bear the best of friends.",
+                message: "Sharing and cooperation bring deeper friendships.",
+                image: "/api/placeholder/800/600",
+                imageAlt: "Amy and Bear playing happily together with the retrieved toy car"
+            }
+        ];
+
+        // DOM elements
+        const storyContainer = document.querySelector('.story-container');
+        const sceneSelector = document.querySelector('.scene-selector');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+        const newsletterForm = document.getElementById('newsletter-form');
+
+        // Current scene index
+        let currentScene = 0;
+
+        // Initialize the story
+        function initStory() {
+            // Create scene dots
+            storyData.forEach((scene, index) => {
+                const dot = document.createElement('div');
+                dot.className = `scene-dot ${index === 0 ? 'active' : ''}`;
+                dot.setAttribute('data-index', index);
+                dot.addEventListener('click', () => {
+                    navigateToScene(index);
+                });
+                sceneSelector.appendChild(dot);
+            });
+
+            // Render the first scene
+            renderScene(currentScene);
+
+            // Set initial button states
+            updateNavButtons();
+        }
+
+        // Render a specific scene
+        function renderScene(index) {
+            const scene = storyData[index];
+            storyContainer.innerHTML = '';
+
+            const sceneElement = document.createElement('div');
+            sceneElement.className = 'scene';
+            sceneElement.innerHTML = `
+                <div class="scene-content">
+                    <div class="scene-text">
+                        <div class="scene-number">${scene.number}</div>
+                        <h2>${scene.title}</h2>
+                        <p>${scene.text}</p>
+                        <p class="educational-message">${scene.message}</p>
+                    </div>
+                    <div class="scene-image-container">
+                        <img src="${scene.image}" alt="${scene.imageAlt}" class="scene-image">
+                    </div>
+                </div>
+            `;
+
+            storyContainer.appendChild(sceneElement);
+
+            // Update active dot
+            document.querySelectorAll('.scene-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        // Navigate to the previous scene
+        function prevScene() {
+            if (currentScene > 0) {
+                currentScene--;
+                renderScene(currentScene);
+                updateNavButtons();
+                scrollToStory();
+            }
+        }
+
+        // Navigate to the next scene
+        function nextScene() {
+            if (currentScene < storyData.length - 1) {
+                currentScene++;
+                renderScene(currentScene);
+                updateNavButtons();
+                scrollToStory();
+            }
+        }
+
+        // Navigate to a specific scene
+        function navigateToScene(index) {
+            currentScene = index;
+            renderScene(currentScene);
+            updateNavButtons();
+            scrollToStory();
+        }
+
+        // Update navigation button states
+        function updateNavButtons() {
+            prevBtn.disabled = currentScene === 0;
+            nextBtn.disabled = currentScene === storyData.length - 1;
+        }
+
+        // Scroll to the story section
+        function scrollToStory() {
+            document.getElementById('story').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            navMenu.classList.toggle('active');
+        }
+
+        // Handle newsletter form submission
+        function handleNewsletterSubmit(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            if (email) {
+                alert(`Thank you for subscribing with ${email}!`);
+                e.target.reset();
+            }
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', prevScene);
+        nextBtn.addEventListener('click', nextScene);
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        newsletterForm.addEventListener('submit', handleNewsletterSubmit);
+
+        // Initialize
+        initStory();
+
+        // Handle navigation links scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#story') {
+                    scrollToStory();
+                } else if (targetId !== '#') {
+                    document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+                }
+                
+                // Close mobile menu if open
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Enhance accessibility with keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                prevScene();
+            } else if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                nextScene();
+            }
+        });
+    </script>
+</body>
+</html>
